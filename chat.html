@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Try Bunny — BreadDash AI Bot Demo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f0d;color:#f5f4f0;height:100vh;display:flex;flex-direction:column;}
+
+/* ── TOPBAR ── */
+.topbar{background:#1a1a16;border-bottom:1px solid rgba(255,255,255,0.08);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.back-btn{color:#9CA3AF;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;}
+.back-btn:hover{color:#F59E0B;}
+.top-title{font-size:14px;font-weight:600;}
+.top-sub{font-size:11px;color:#9CA3AF;}
+.demo-pill{background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#F59E0B;font-size:10px;padding:3px 10px;border-radius:20px;}
+
+/* ── LAYOUT ── */
+.shell{display:flex;flex:1;overflow:hidden;max-width:1100px;margin:0 auto;width:100%;gap:0;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:280px;flex-shrink:0;background:#141410;border-right:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;overflow-y:auto;}
+.sidebar-section{padding:16px;}
+.sidebar-title{font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:0.07em;font-weight:600;margin-bottom:10px;}
+.menu-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.04);margin-bottom:6px;cursor:pointer;transition:.15s;border:1px solid transparent;}
+.menu-item:hover{background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.2);}
+.menu-item .emoji{font-size:20px;flex-shrink:0;}
+.menu-item .info{flex:1;}
+.menu-item .name{font-size:12px;font-weight:500;}
+.menu-item .price{font-size:11px;color:#F59E0B;margin-top:1px;}
+.cart-box{background:rgba(255,255,255,0.04);border-radius:8px;padding:12px;margin-bottom:8px;}
+.cart-title{font-size:11px;color:#9CA3AF;margin-bottom:8px;font-weight:500;}
+.cart-item{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;color:#D1D5DB;}
+.cart-total{display:flex;justify-content:space-between;font-size:13px;font-weight:600;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);margin-top:6px;}
+.cart-empty{font-size:12px;color:#6B7280;text-align:center;padding:8px 0;}
+.sidebar-btn{width:100%;padding:10px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:6px;transition:.15s;}
+.btn-order{background:#B45309;color:white;}
+.btn-order:hover{background:#92400E;}
+.btn-reset{background:rgba(255,255,255,0.06);color:#9CA3AF;}
+.btn-reset:hover{background:rgba(255,255,255,0.1);color:#F5F4F0;}
+.quick-cmds{display:flex;flex-wrap:wrap;gap:5px;}
+.qcmd{font-size:10px;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#9CA3AF;cursor:pointer;transition:.15s;}
+.qcmd:hover{background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.3);color:#F59E0B;}
+.status-row{display:flex;align-items:center;gap:6px;font-size:11px;color:#6B7280;padding:4px 0;}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#22C55E;}
+.status-dot.thinking{background:#F59E0B;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+/* ── CHAT PANEL ── */
+.chat-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#0f0f0d;}
+
+/* WhatsApp-style header */
+.chat-header{background:#1F2937;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.wa-avatar{width:40px;height:40px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.wa-name{font-size:14px;font-weight:600;}
+.wa-status{font-size:11px;color:#22C55E;}
+.wa-status.typing{color:#9CA3AF;}
+
+/* Chat messages */
+.chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;background:#0B141A;}
+.chat-body::-webkit-scrollbar{width:4px;}
+.chat-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+
+.bubble-wrap{display:flex;flex-direction:column;}
+.bubble-wrap.user{align-items:flex-end;}
+.bubble-wrap.bot{align-items:flex-start;}
+.bubble{max-width:75%;padding:9px 12px;border-radius:10px;font-size:13px;line-height:1.55;white-space:pre-wrap;}
+.bubble.user{background:#005C4B;color:white;border-bottom-right-radius:3px;}
+.bubble.bot{background:#202C33;color:#E9EDEF;border-bottom-left-radius:3px;}
+.bubble-time{font-size:10px;color:rgba(255,255,255,0.35);margin-top:3px;padding:0 4px;}
+.typing-ind{display:flex;align-items:center;gap:4px;padding:10px 14px;background:#202C33;border-radius:10px;border-bottom-left-radius:3px;width:fit-content;}
+.typing-ind span{width:6px;height:6px;border-radius:50%;background:#9CA3AF;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}
+.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+
+/* Order confirmed card */
+.order-card{background:#1a2a1a;border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:12px;margin-top:4px;max-width:75%;}
+.order-card-title{font-size:12px;font-weight:600;color:#22C55E;margin-bottom:8px;}
+.order-card-row{display:flex;justify-content:space-between;font-size:11px;color:#9CA3AF;padding:2px 0;}
+.order-card-row span:last-child{color:#E9EDEF;}
+
+/* Input area */
+.chat-input-wrap{background:#1F2937;padding:10px 16px;display:flex;gap:10px;align-items:flex-end;flex-shrink:0;}
+.chat-input{flex:1;background:#2A3942;border:none;border-radius:20px;padding:10px 16px;font-size:14px;color:#E9EDEF;outline:none;resize:none;max-height:100px;font-family:inherit;line-height:1.4;}
+.chat-input::placeholder{color:#8696A0;}
+.send-btn{width:44px;height:44px;border-radius:50%;background:#00A884;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s;}
+.send-btn:hover{background:#017A5F;}
+.send-btn svg{width:20px;height:20px;fill:white;}
+.send-btn:disabled{background:#374151;cursor:not-allowed;}
+
+/* Quick suggestions */
+.suggestions{display:flex;gap:6px;padding:8px 16px;overflow-x:auto;flex-shrink:0;background:#1F2937;border-top:1px solid rgba(255,255,255,0.05);}
+.suggestions::-webkit-scrollbar{display:none;}
+.suggestion{font-size:11px;padding:5px 12px;border-radius:20px;border:1px solid rgba(0,168,132,0.4);color:#00A884;cursor:pointer;white-space:nowrap;background:transparent;transition:.15s;flex-shrink:0;}
+.suggestion:hover{background:rgba(0,168,132,0.15);}
+
+@media(max-width:700px){
+  .sidebar{display:none;}
+  .shell{max-width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="back-btn">← Back</a>
+    <div>
+      <div class="top-title">🍞 BreadDash — Bot Demo</div>
+      <div class="top-sub">Try ordering from the AI bot live</div>
+    </div>
+  </div>
+  <span class="demo-pill">Demo Mode</span>
+</div>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Today's Menu</div>
+      <div id="menu-list"></div>
+    </div>
+
+    <div class="sidebar-section" style="border-top:1px solid rgba(255,255,255,0.06);padding-top:16px;">
+      <div class="sidebar-title">Your Cart</div>
+      <div class="cart-box">
+        <div id="cart-display"><div class="cart-empty">Cart is empty</div></div>
+      </div>
+      <button class="sidebar-btn btn-order" onclick="checkoutCart()">Place Order →</button>
+      <button class="sidebar-btn btn-reset" onclick="resetChat()">Reset Chat</button>
+    </div>
+
+    <div class="sidebar-section" style="border-top:1px solid rgba(255,255,255,0.06);padding-top:16px;">
+      <div class="sidebar-title">Quick Commands</div>
+      <div class="quick-cmds">
+        <span class="qcmd" onclick="sendQuick('MENU')">MENU</span>
+        <span class="qcmd" onclick="sendQuick('ORDER')">ORDER</span>
+        <span class="qcmd" onclick="sendQuick('CART')">CART</span>
+        <span class="qcmd" onclick="sendQuick('any deals?')">DEALS</span>
+        <span class="qcmd" onclick="sendQuick('RESET')">RESET</span>
+        <span class="qcmd" onclick="sendQuick('HUMAN')">HUMAN</span>
+        <span class="qcmd" onclick="sendQuick('what did I order before?')">ORDER HISTORY</span>
+        <span class="qcmd" onclick="sendQuick('what is my address?')">MY ADDRESS</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section" style="margin-top:auto;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;">
+      <div class="status-row"><div class="status-dot" id="ai-dot"></div><span id="ai-status">AI Ready</span></div>
+      <div class="status-row" style="margin-top:4px;font-size:10px;color:#4B5563;">Powered by Groq — Llama 3.3 70B</div>
+    </div>
+  </div>
+
+  <!-- CHAT PANEL -->
+  <div class="chat-panel">
+    <div class="chat-header">
+      <div class="wa-avatar">🍞</div>
+      <div>
+        <div class="wa-name">GC11 DoorDash</div>
+        <div class="wa-status" id="bot-status">● online</div>
+      </div>
+    </div>
+
+    <div class="chat-body" id="chat-body"></div>
+
+    <div class="suggestions" id="suggestions">
+      <button class="suggestion" onclick="sendQuick('hi')">👋 Say hi</button>
+      <button class="suggestion" onclick="sendQuick('show me the menu')">📋 See menu</button>
+      <button class="suggestion" onclick="sendQuick('I want to order')">🛒 Order now</button>
+      <button class="suggestion" onclick="sendQuick('any deals today?')">🔥 Today\'s deals</button>
+      <button class="suggestion" onclick="sendQuick('how does delivery work?')">🚪 Delivery info</button>
+    </div>
+
+    <div class="chat-input-wrap">
+      <textarea class="chat-input" id="chat-input" placeholder="Type a message..." rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────
+const SERVER = window.location.origin;
+let history = [];
+let cart = [];
+let profile = { name: null, flat: null };
+let isTyping = false;
+let orderCount = 0;
+
+const PRODUCTS = [
+  { id:'p1', emoji:'🍞', name:'White Bread (400g)',   price:45  },
+  { id:'p2', emoji:'🍫', name:'Brown Bread (400g)',   price:55  },
+  { id:'p3', emoji:'🥐', name:'Multigrain Bread',     price:70  },
+  { id:'p4', emoji:'🍔', name:'Pav (6 pcs)',          price:25  },
+  { id:'p5', emoji:'🫓', name:'Bun Pack (4 pcs)',     price:30  },
+  { id:'p6', emoji:'🥛', name:'Full Cream Milk (1L)', price:62  },
+  { id:'p7', emoji:'🥛', name:'Toned Milk (500ml)',   price:28  },
+  { id:'p8', emoji:'🥚', name:'Eggs (6 pcs)',         price:54  },
+  { id:'p9', emoji:'🥚', name:'Eggs (12 pcs)',        price:102 },
+];
+
+// ── MENU SIDEBAR ──────────────────────────────────────────
+function renderMenu() {
+  const list = document.getElementById('menu-list');
+  list.innerHTML = PRODUCTS.map(p => `
+    <div class="menu-item" onclick="addFromMenu('${p.id}')">
+      <div class="emoji">${p.emoji}</div>
+      <div class="info">
+        <div class="name">${p.name}</div>
+        <div class="price">₹${p.price}</div>
+      </div>
+      <div style="font-size:18px;color:#374151;">+</div>
+    </div>`).join('');
+}
+
+function addFromMenu(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p) return;
+  const existing = cart.findIndex(i => i.id === id);
+  if (existing >= 0) cart[existing].qty++;
+  else cart.push({ ...p, qty: 1 });
+  renderCart();
+  sendQuick(`I want to add ${p.name}`);
+}
+
+// ── CART SIDEBAR ──────────────────────────────────────────
+function renderCart() {
+  const box = document.getElementById('cart-display');
+  if (!cart.length) { box.innerHTML = '<div class="cart-empty">Cart is empty</div>'; return; }
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  box.innerHTML = cart.map(i => `
+    <div class="cart-item">
+      <span>${i.emoji} ${i.name.split('(')[0].trim()} ×${i.qty}</span>
+      <span>₹${i.price * i.qty}</span>
+    </div>`).join('') +
+    `<div class="cart-total"><span>Total</span><span>₹${total}</span></div>`;
+}
+
+function checkoutCart() {
+  if (!cart.length) { sendQuick('I want to see the menu'); return; }
+  const items = cart.map(i => `${i.qty} ${i.name}`).join(', ');
+  sendQuick(`I want to order: ${items}. Please confirm my order.`);
+}
+
+// ── CHAT ──────────────────────────────────────────────────
+function time() {
+  return new Date().toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+}
+
+function addBubble(text, sender) {
+  const body = document.getElementById('chat-body');
+  const wrap = document.createElement('div');
+  wrap.className = 'bubble-wrap ' + sender;
+
+  // Check if it's an order confirmation
+  if (sender === 'bot' && text.includes('Order Confirmed') || text.includes('Order #ORD-')) {
+    const card = document.createElement('div');
+    card.className = 'order-card';
+    card.innerHTML = `<div class="order-card-title">✅ Order Confirmed!</div>${text.replace(/\n/g,'<br>')}`;
+    wrap.appendChild(card);
+  } else {
+    const b = document.createElement('div');
+    b.className = 'bubble ' + sender;
+    b.innerHTML = text.replace(/\n/g, '<br>');
+    wrap.appendChild(b);
+  }
+
+  const t = document.createElement('div');
+  t.className = 'bubble-time';
+  t.style.textAlign = sender === 'user' ? 'right' : 'left';
+  t.textContent = time() + (sender === 'user' ? ' ✓✓' : '');
+  wrap.appendChild(t);
+  body.appendChild(wrap);
+  body.scrollTop = body.scrollHeight;
+}
+
+function showTyping() {
+  const body = document.getElementById('chat-body');
+  const wrap = document.createElement('div');
+  wrap.className = 'bubble-wrap bot';
+  wrap.id = 'typing-wrap';
+  wrap.innerHTML = '<div class="typing-ind"><span></span><span></span><span></span></div>';
+  body.appendChild(wrap);
+  body.scrollTop = body.scrollHeight;
+
+  document.getElementById('bot-status').textContent = 'typing...';
+  document.getElementById('bot-status').className = 'wa-status typing';
+  document.getElementById('ai-dot').className = 'status-dot thinking';
+  document.getElementById('ai-status').textContent = 'AI thinking...';
+}
+
+function hideTyping() {
+  document.getElementById('typing-wrap')?.remove();
+  document.getElementById('bot-status').textContent = '● online';
+  document.getElementById('bot-status').className = 'wa-status';
+  document.getElementById('ai-dot').className = 'status-dot';
+  document.getElementById('ai-status').textContent = 'AI Ready';
+}
+
+// ── CALL BOT API ──────────────────────────────────────────
+async function callBot(userMsg) {
+  // Build context string for the API
+  const cartText = cart.length
+    ? cart.map(i => `${i.name} x${i.qty} = ₹${i.price*i.qty}`).join(', ') + ` | Total: ₹${cart.reduce((s,i)=>s+i.price*i.qty,0)}`
+    : 'empty';
+
+  const menuText = PRODUCTS.map((p,i) => `${i+1}. ${p.emoji} ${p.name} — ₹${p.price}`).join('\n');
+
+  try {
+    const res = await fetch(SERVER + '/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: userMsg,
+        history: history.slice(-12),
+        context: {
+          customerName: profile.name || 'Customer',
+          flatNumber: profile.flat || 'Not set',
+          cart: cartText,
+          menu: menuText,
+          isFirstTime: orderCount === 0,
+        }
+      })
+    });
+    const data = await res.json();
+    return data.reply || getFallbackReply(userMsg);
+  } catch(e) {
+    return getFallbackReply(userMsg);
+  }
+}
+
+function getFallbackReply(msg) {
+  const m = msg.toLowerCase();
+  if (/^(hi|hello|hey|start|namaste)/.test(m))
+    return `Welcome to GC11 DoorDash! 👋\n\nI'm Bunny, your AI ordering assistant.\n\nYou can browse the menu on the left and click + to add items, or type MENU to see all products.\n\nWhat would you like today?`;
+  if (/menu|catalog|products|items/.test(m))
+    return `Today's Menu:\n\n🍞 White Bread (400g) — ₹45\n🍫 Brown Bread (400g) — ₹55\n🥐 Multigrain Bread — ₹70\n🍔 Pav (6 pcs) — ₹25\n🫓 Bun Pack (4 pcs) — ₹30\n🥛 Full Cream Milk (1L) — ₹62\n🥛 Toned Milk (500ml) — ₹28\n🥚 Eggs (6 pcs) — ₹54\n🥚 Eggs (12 pcs) — ₹102\n\nClick any item on the left to add to cart!`;
+  if (/deal|offer|discount|free/.test(m))
+    return `Today's Offers:\n\n• Buy 2 White Bread → get Pav FREE! 🎁\n• First order → FREE Pav pack\n• Daily subscription → 10% off every order\n\nWant to grab a deal? Tell me what you'd like!`;
+  if (/deliver|time|when|how long/.test(m))
+    return `Delivery Details:\n\n⏰ Order before 9:00 AM → Delivered by 10:00 AM\n🚪 Doorstep delivery to your flat\n📍 Serving 11th Avenue society (1000+ flats)\n\nWould you like to place an order?`;
+  if (/pay|payment|upi|cash/.test(m))
+    return `Payment Options:\n\n💵 Cash on Delivery — pay at door\n📱 UPI — our agent carries a QR code\n\nNo online payment needed in advance!\n\nReady to order?`;
+  if (/cart|bag|order/.test(m))
+    return cart.length
+      ? `Your cart:\n${cart.map(i=>`• ${i.emoji} ${i.name} ×${i.qty} = ₹${i.price*i.qty}`).join('\n')}\n\nTotal: ₹${cart.reduce((s,i)=>s+i.price*i.qty,0)}\n\nShall I confirm this order?`
+      : `Your cart is empty!\n\nBrowse the menu on the left or type MENU to see products.`;
+  if (/confirm|checkout|place|done/.test(m) && cart.length) {
+    return placeOrder();
+  }
+  if (/reset|restart|start over/.test(m))
+    return `Starting fresh! 🔄\n\nWelcome to GC11 DoorDash! Type MENU to browse or ORDER to start.`;
+  if (/human|agent|support|help/.test(m))
+    return `I've added you to our support queue! 🙋\n\nA team member will contact you on WhatsApp shortly.\n\nReference: WL-${Date.now().toString(36).toUpperCase()}\n\nIn the meantime, feel free to continue browsing!`;
+  return `I'm here to help you order from GC11 DoorDash! 🍞\n\nTry these:\n• Type MENU to see products\n• Click items on the left to add to cart\n• Type DEALS for today's offers\n• Type ORDER to start ordering`;
+}
+
+function placeOrder() {
+  if (!cart.length) return 'Your cart is empty. Please add items first!';
+  const total = cart.reduce((s,i) => s+i.price*i.qty, 0);
+  const orderId = 'ORD-' + Date.now().toString(36).toUpperCase();
+  const flatText = profile.flat || 'A-101 (demo)';
+  orderCount++;
+  // Clear cart after order
+  setTimeout(() => { cart = []; renderCart(); }, 1000);
+  return `Order Confirmed! ✅\n\nOrder #${orderId}\nFlat: ${flatText}\nTotal: ₹${total}\nPayment: Cash / UPI at door\nDelivery by: 10:00 AM\n\nThank you for choosing GC11 DoorDash! 🍞`;
+}
+
+// ── EXTRACT PROFILE INFO ──────────────────────────────────
+function extractProfile(msg) {
+  // Try to detect flat number patterns
+  const flatMatch = msg.match(/\b([A-Z]-?\d{1,4}|[A-Z]\s*tower[-\s]?\d{1,4}|flat\s*\d{1,4}|\d{1,4}\s*[A-Z]\s*tower)/i);
+  if (flatMatch && !profile.flat) profile.flat = flatMatch[0].trim();
+
+  // Try to detect if it's a name (only in early conversation)
+  if (!profile.name && history.length <= 4 && msg.length > 1 && msg.length < 40 && !/^\d/.test(msg) && !/^(hi|hello|menu|order|yes|no)/i.test(msg)) {
+    profile.name = msg.trim();
+  }
+}
+
+// ── SEND MESSAGE ──────────────────────────────────────────
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg || isTyping) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  isTyping = true;
+  document.getElementById('send-btn').disabled = true;
+
+  // Extract profile info
+  extractProfile(msg);
+
+  // Check for local order confirmation
+  const isConfirm = /^(confirm|yes|place order|checkout|done ordering)$/i.test(msg.trim());
+  if (isConfirm && cart.length) {
+    addBubble(msg, 'user');
+    showTyping();
+    await delay(800);
+    hideTyping();
+    const reply = placeOrder();
+    addBubble(reply, 'bot');
+    history.push({ role:'user', content:msg }, { role:'assistant', content:reply });
+    updateSuggestions('post-order');
+    isTyping = false;
+    document.getElementById('send-btn').disabled = false;
+    return;
+  }
+
+  addBubble(msg, 'user');
+  showTyping();
+
+  const reply = await callBot(msg);
+  await delay(300);
+  hideTyping();
+  addBubble(reply, 'bot');
+
+  history.push({ role:'user', content:msg }, { role:'assistant', content:reply });
+
+  // Update suggestions based on context
+  if (/menu|catalog/i.test(reply)) updateSuggestions('menu');
+  else if (/cart|order/i.test(reply)) updateSuggestions('cart');
+  else if (/confirm|address/i.test(reply)) updateSuggestions('confirm');
+  else if (/name/i.test(reply) && history.length < 4) updateSuggestions('name');
+  else updateSuggestions('default');
+
+  isTyping = false;
+  document.getElementById('send-btn').disabled = false;
+}
+
+function sendQuick(text) {
+  document.getElementById('chat-input').value = text;
+  sendMessage();
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function updateSuggestions(ctx) {
+  const map = {
+    default: ['See menu', 'Any deals?', 'Delivery info', 'How to pay?'],
+    menu: ['Add White Bread', 'Add Eggs', 'Add Milk', 'See deals'],
+    cart: ['Confirm order', 'Add more items', 'Remove item', 'See total'],
+    confirm: ['Yes, confirm', 'Change address', 'Add more items'],
+    'post-order': ['New order', 'See menu', 'Talk to support'],
+    name: ['Sarans', 'Manoj', 'Priya', 'Rahul'],
+  };
+  const items = map[ctx] || map.default;
+  document.getElementById('suggestions').innerHTML = items.map(s =>
+    `<button class="suggestion" onclick="sendQuick('${s}')">${s}</button>`
+  ).join('');
+}
+
+function resetChat() {
+  history = [];
+  cart = [];
+  profile = { name: null, flat: null };
+  orderCount = 0;
+  document.getElementById('chat-body').innerHTML = '';
+  renderCart();
+  updateSuggestions('default');
+  setTimeout(() => {
+    addBubble(`Welcome to GC11 DoorDash! 👋\n\nI'm Bunny, your AI ordering assistant.\n\nBrowse the menu on the left or type MENU to get started!`, 'bot');
+  }, 300);
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+// ── INIT ──────────────────────────────────────────────────
+renderMenu();
+renderCart();
+setTimeout(() => {
+  addBubble(`Welcome to GC11 DoorDash! 👋\n\nI'm Bunny, your AI ordering assistant for 11th Avenue society.\n\nYou can:\n• Browse the menu on the left and click + to add items\n• Type MENU to see all products\n• Ask me anything about orders, delivery, or payments\n\nWhat would you like today?`, 'bot');
+}, 500);
+</script>
+</body>
+</html>
