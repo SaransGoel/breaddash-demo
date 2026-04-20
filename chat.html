@@ -419,7 +419,7 @@ async function sendMessage() {
   extractProfile(msg);
 
   // Check for local order confirmation
-  const isConfirm = /^(confirm|yes|place order|checkout|done ordering)$/i.test(msg.trim());
+const isConfirm = /(confirm|yes|place order|checkout|done ordering)/i.test(msg.trim());
   if (isConfirm && cart.length) {
     addBubble(msg, 'user');
     showTyping();
