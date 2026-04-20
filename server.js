@@ -54,12 +54,25 @@ app.get('/api/health', (req, res) => res.json({
 
 // ── ORDERS API ────────────────────────────────────────────
 app.get('/api/orders', (req, res) => res.json({ success:true, orders: demoOrders }));
-app.patch('/api/orders/:id', (req, res) => {
-  const o = demoOrders.find(x => x.orderId === req.params.id);
-  if (o) o.status = req.body.status;
-  res.json({ success:true });
+
+// Add this new POST route:
+app.post('/api/orders', (req, res) => {
+  const newOrder = {
+    orderId: req.body.orderId,
+    flatNumber: req.body.flatNumber,
+    phone: '+91999999****', // Mock phone for demo
+    items: req.body.items,
+    total: req.body.total,
+    paymentMode: 'cod',
+    status: 'confirmed',
+    createdAt: { seconds: Math.floor(Date.now() / 1000) }
+  };
+  demoOrders.unshift(newOrder); // Add to the beginning of the array
+  res.json({ success: true, order: newOrder });
 });
 
+app.patch('/api/orders/:id', (req, res) => { // ... existing code
+  
 // ── PRODUCTS API ──────────────────────────────────────────
 app.get('/api/products', (req, res) => res.json({ success:true, products: demoProducts }));
 app.patch('/api/products/:id', (req, res) => {

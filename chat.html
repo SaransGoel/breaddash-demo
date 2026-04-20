@@ -362,14 +362,33 @@ function getFallbackReply(msg) {
   return `I'm here to help you order from GC11 DoorDash! 🍞\n\nTry these:\n• Type MENU to see products\n• Click items on the left to add to cart\n• Type DEALS for today's offers\n• Type ORDER to start ordering`;
 }
 
-function placeOrder() {
+async function placeOrder() {
   if (!cart.length) return 'Your cart is empty. Please add items first!';
+  
   const total = cart.reduce((s,i) => s+i.price*i.qty, 0);
   const orderId = 'ORD-' + Date.now().toString(36).toUpperCase();
   const flatText = profile.flat || 'A-101 (demo)';
+  
+  // 1. Send the order to the server
+  try {
+    await fetch(SERVER + '/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId: orderId,
+        flatNumber: flatText,
+        items: cart,
+        total: total
+      })
+    });
+  } catch (e) {
+    console.error("Failed to sync order to dashboard", e);
+  }
+
   orderCount++;
-  // Clear cart after order
+  // 2. Clear cart after order
   setTimeout(() => { cart = []; renderCart(); }, 1000);
+  
   return `Order Confirmed! ✅\n\nOrder #${orderId}\nFlat: ${flatText}\nTotal: ₹${total}\nPayment: Cash / UPI at door\nDelivery by: 10:00 AM\n\nThank you for choosing GC11 DoorDash! 🍞`;
 }
 
@@ -406,7 +425,7 @@ async function sendMessage() {
     showTyping();
     await delay(800);
     hideTyping();
-    const reply = placeOrder();
+    const reply = await placeOrder();
     addBubble(reply, 'bot');
     history.push({ role:'user', content:msg }, { role:'assistant', content:reply });
     updateSuggestions('post-order');
