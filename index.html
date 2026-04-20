@@ -7,55 +7,51 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f0d;color:#f5f4f0;}
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;position:relative;overflow:hidden;}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(180,83,9,0.15) 0%,transparent 70%);}
-.badge{background:rgba(180,83,9,0.2);border:1px solid rgba(180,83,9,0.4);color:#F59E0B;font-size:12px;padding:6px 16px;border-radius:20px;margin-bottom:24px;display:inline-block;}
-h1{font-size:clamp(40px,7vw,80px);font-weight:700;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#F59E0B,#EF4444,#F59E0B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.sub{font-size:clamp(16px,2vw,20px);color:#9CA3AF;max-width:600px;margin:0 auto 40px;line-height:1.7;}
-.btn-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:60px;}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;}
+.badge{background:rgba(180,83,9,0.2);border:1px solid rgba(180,83,9,0.4);color:#F59E0B;font-size:12px;padding:6px 16px;border-radius:20px;margin-bottom:28px;display:inline-block;}
+h1{font-size:clamp(48px,8vw,90px);font-weight:700;line-height:1.05;margin-bottom:20px;background:linear-gradient(135deg,#F59E0B 0%,#EF4444 50%,#F59E0B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sub{font-size:clamp(16px,2vw,20px);color:#9CA3AF;max-width:580px;margin:0 auto 48px;line-height:1.7;}
+.btn-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;}
 .btn{padding:14px 28px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
 .btn-primary{background:#B45309;color:white;}
-.btn-primary:hover{background:#92400E;}
-.btn-secondary{background:rgba(255,255,255,0.08);color:#F5F4F0;border:1px solid rgba(255,255,255,0.15);}
+.btn-primary:hover{background:#92400E;transform:translateY(-1px);}
+.btn-secondary{background:rgba(255,255,255,0.07);color:#F5F4F0;border:1px solid rgba(255,255,255,0.15);}
 .btn-secondary:hover{background:rgba(255,255,255,0.12);}
-.chat-preview{background:#1a1a16;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:20px;max-width:380px;margin:0 auto;text-align:left;}
-.chat-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.08);}
-.chat-avatar{width:40px;height:40px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:20px;}
-.chat-name{font-size:14px;font-weight:600;}
-.chat-status{font-size:11px;color:#22C55E;}
-.msg{padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.5;margin-bottom:8px;max-width:85%;}
-.msg-user{background:#005C4B;color:white;margin-left:auto;}
-.msg-bot{background:#2a2a24;color:#F5F4F0;}
-.msg-time{font-size:10px;color:rgba(255,255,255,0.4);margin-top:4px;text-align:right;}
-.features{padding:80px 20px;max-width:1100px;margin:0 auto;}
-.features h2{font-size:36px;font-weight:700;text-align:center;margin-bottom:12px;}
-.features-sub{text-align:center;color:#9CA3AF;margin-bottom:56px;font-size:16px;}
-.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;}
-.feature-card{background:#1a1a16;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;}
-.feature-icon{font-size:32px;margin-bottom:16px;}
-.feature-title{font-size:18px;font-weight:600;margin-bottom:8px;}
-.feature-desc{font-size:14px;color:#9CA3AF;line-height:1.7;}
-.stack{padding:60px 20px;background:#141410;text-align:center;}
-.stack h2{font-size:30px;font-weight:700;margin-bottom:40px;}
-.stack-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;max-width:800px;margin:0 auto;}
-.stack-pill{background:#1a1a16;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 20px;display:flex;align-items:center;gap:10px;font-size:14px;}
-.stack-pill .icon{font-size:22px;}
-.demo-section{padding:80px 20px;text-align:center;}
-.demo-section h2{font-size:36px;font-weight:700;margin-bottom:12px;}
-.demo-sub{color:#9CA3AF;margin-bottom:40px;}
-.demo-frame{background:#1a1a16;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px;max-width:900px;margin:0 auto;}
-.demo-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
-.demo-tab{padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#9CA3AF;cursor:pointer;font-size:13px;}
-.demo-tab.active{background:rgba(180,83,9,0.2);border-color:#B45309;color:#F59E0B;}
-.demo-content{display:none;text-align:left;}
-.demo-content.active{display:block;}
-.code-block{background:#0f0f0d;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:16px;font-family:'Courier New',monospace;font-size:12px;color:#a8e063;line-height:1.8;overflow-x:auto;}
-.footer{padding:40px 20px;text-align:center;border-top:1px solid rgba(255,255,255,0.06);color:#6B7280;font-size:13px;}
-.footer a{color:#F59E0B;text-decoration:none;}
-.live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22C55E;font-size:11px;padding:4px 10px;border-radius:20px;}
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22C55E;font-size:11px;padding:4px 12px;border-radius:20px;margin-bottom:48px;}
 .live-dot{width:6px;height:6px;border-radius:50%;background:#22C55E;animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-@media(max-width:600px){.btn-row{flex-direction:column;align-items:center;}.btn{width:100%;justify-content:center;}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.preview-img{background:#1a1a16;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;max-width:360px;text-align:left;pointer-events:none;}
+.wa-header{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:14px;}
+.wa-av{width:38px;height:38px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.wa-n{font-size:13px;font-weight:600;}
+.wa-s{font-size:11px;color:#22C55E;}
+.msg{padding:9px 12px;border-radius:10px;font-size:12px;line-height:1.5;margin-bottom:7px;max-width:88%;}
+.mu{background:#005C4B;color:white;margin-left:auto;}
+.mb{background:#202C33;color:#E9EDEF;}
+.features{padding:80px 20px;max-width:1100px;margin:0 auto;}
+.features h2{font-size:34px;font-weight:700;text-align:center;margin-bottom:10px;}
+.fsub{text-align:center;color:#9CA3AF;margin-bottom:52px;}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;}
+.fcard{background:#1a1a16;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:26px;}
+.ficon{font-size:28px;margin-bottom:14px;}
+.ftitle{font-size:17px;font-weight:600;margin-bottom:8px;}
+.fdesc{font-size:13px;color:#9CA3AF;line-height:1.7;}
+.stack{padding:60px 20px;background:#111110;text-align:center;}
+.stack h2{font-size:28px;font-weight:700;margin-bottom:36px;}
+.sgrid{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;max-width:800px;margin:0 auto;}
+.spill{background:#1a1a16;border:1px solid rgba(255,255,255,0.09);border-radius:8px;padding:10px 18px;font-size:13px;display:flex;align-items:center;gap:8px;}
+.demo-sec{padding:80px 20px;text-align:center;}
+.demo-sec h2{font-size:34px;font-weight:700;margin-bottom:10px;}
+.dsub{color:#9CA3AF;margin-bottom:40px;}
+.demo-box{background:#1a1a16;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:24px;max-width:860px;margin:0 auto;text-align:left;}
+.dtabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.dtab{padding:7px 14px;border-radius:7px;border:1px solid rgba(255,255,255,0.09);background:transparent;color:#9CA3AF;cursor:pointer;font-size:12px;transition:.15s;}
+.dtab.active{background:rgba(180,83,9,0.2);border-color:#B45309;color:#F59E0B;}
+.dc{display:none;}.dc.active{display:block;}
+.codeblock{background:#0a0a08;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:16px;font-family:'Courier New',monospace;font-size:12px;color:#a8e063;line-height:1.9;overflow-x:auto;white-space:pre;}
+footer{padding:36px 20px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);color:#6B7280;font-size:13px;}
+footer a{color:#F59E0B;text-decoration:none;}
+@media(max-width:550px){.btn-row{flex-direction:column;align-items:center;}.btn{width:260px;justify-content:center;}}
 </style>
 </head>
 <body>
@@ -64,146 +60,123 @@ h1{font-size:clamp(40px,7vw,80px);font-weight:700;line-height:1.1;margin-bottom:
   <div class="badge">🍞 Portfolio Project — AI Delivery System</div>
   <h1>BreadDash</h1>
   <p class="sub">A full-stack AI-powered WhatsApp ordering bot for doorstep grocery delivery. Customers chat, the AI takes orders, the dashboard tracks everything.</p>
-  <div class="btn-row" style="position:relative;z-index:10;">
-    <a href="/chat" class="btn btn-primary">💬 Try the Bot →</a>
-    <a href="/dashboard" class="btn btn-secondary" style="border-color:rgba(255,255,255,0.2);">📊 View Dashboard</a>
+
+  <div class="btn-row">
+    <a href="/chat" class="btn btn-primary">💬 Try the Bot Live →</a>
+    <a href="/dashboard" class="btn btn-secondary">📊 View Dashboard</a>
     <a href="https://github.com/SaransGoel/breaddash-demo" target="_blank" class="btn btn-secondary">⭐ GitHub</a>
   </div>
-  <div style="margin-bottom:32px;"><span class="live-badge"><span class="live-dot"></span>Demo Live</span></div>
-  <div class="chat-preview" style="pointer-events:none;opacity:0.85;">
-    <div class="chat-header">
-      <div class="chat-avatar">🍞</div>
-      <div>
-        <div class="chat-name">GC11 DoorDash</div>
-        <div class="chat-status">● online</div>
-      </div>
+
+  <div class="live-badge"><span class="live-dot"></span>Demo Live on Render</div>
+
+  <div class="preview-img">
+    <div class="wa-header">
+      <div class="wa-av">🍞</div>
+      <div><div class="wa-n">GC11 DoorDash</div><div class="wa-s">● online</div></div>
     </div>
-    <div class="msg msg-user">hi<div class="msg-time">9:10 AM ✓✓</div></div>
-    <div class="msg msg-bot">Welcome to GC11 DoorDash! 👋<br><br>I'm Bunny, your AI ordering assistant.<br><br>Type MENU to see today's products!</div>
-    <div class="msg msg-user">menu<div class="msg-time">9:11 AM ✓✓</div></div>
-    <div class="msg msg-bot">Today's Menu:<br><br>🍞 White Bread — ₹45<br>🍫 Brown Bread — ₹55<br>🥚 Eggs (6 pcs) — ₹54<br>🥛 Full Cream Milk — ₹62<br><br>Reply with item to order!</div>
-    <div class="msg msg-user">2 white bread, flat A-204<div class="msg-time">9:11 AM ✓✓</div></div>
-    <div class="msg msg-bot">Order confirmed! ✅<br><br>Order #ORD-K7X2M<br>Flat: A-204 | Total: ₹90<br>Cash / UPI at door<br>Delivery by 10:00 AM 🍞</div>
+    <div class="msg mb">Welcome! I'm Bunny 👋<br>Type MENU to see today's products!</div>
+    <div class="msg mu">menu</div>
+    <div class="msg mb">🍞 White Bread — ₹45<br>🥛 Full Cream Milk — ₹62<br>🥚 Eggs (6 pcs) — ₹54<br><br>Click an item to order!</div>
+    <div class="msg mu">2 white bread, flat A-204</div>
+    <div class="msg mb">✅ Order #ORD-K7X2M confirmed!<br>Flat: A-204 | Total: ₹90<br>Delivery by 10:00 AM 🍞</div>
   </div>
 </section>
 
 <section class="features">
   <h2>What this project does</h2>
-  <p class="features-sub">Built for a real society delivery business. Every piece works in production.</p>
-  <div class="feature-grid">
-    <div class="feature-card">
-      <div class="feature-icon">🤖</div>
-      <div class="feature-title">AI-Powered WhatsApp Bot</div>
-      <div class="feature-desc">Customers chat naturally in English or Hinglish. The bot loads their full profile, order history, and cart from the database before every message — so it can answer "what did I order last time?" or "what's my address?" from real data.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">📊</div>
-      <div class="feature-title">Real-Time Dashboard</div>
-      <div class="feature-desc">Secure login-protected web dashboard. View live orders, update delivery status, manage products, see customer database, handle support requests, send broadcast messages, export CSV.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🧠</div>
-      <div class="feature-title">Context-Aware Intelligence</div>
-      <div class="feature-desc">The LLM receives the customer's complete Firebase context on every message — profile, past orders with statuses, current cart, live menu, active deals. It answers questions from real data, not scripts.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🏗️</div>
-      <div class="feature-title">Production Architecture</div>
-      <div class="feature-desc">Node.js + Express server deployed on Render. Firebase Firestore database (Mumbai region). Twilio WhatsApp API. Groq LLM inference. Razorpay payments. UptimeRobot monitoring. Full CI/CD via GitHub.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">💬</div>
-      <div class="feature-title">Full Conversation Flow</div>
-      <div class="feature-desc">State-managed conversations with profile collection, product catalog browsing, cart management, address confirmation, payment selection, and order confirmation. Global commands work from any state.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">₹0</div>
-      <div class="feature-title">Zero-Budget Trial Stack</div>
-      <div class="feature-desc">Entire system runs for ₹0/month during trial. Groq free tier (14,400 req/day), Firebase Spark plan, Render free hosting, Twilio sandbox. Clear upgrade path to production as revenue grows.</div>
-    </div>
+  <p class="fsub">Built for a real society delivery business. Every piece works in production.</p>
+  <div class="fgrid">
+    <div class="fcard"><div class="ficon">🤖</div><div class="ftitle">AI-Powered WhatsApp Bot</div><div class="fdesc">Customers chat naturally in English or Hinglish. The bot loads their full profile, order history and cart from the database before every message — answering real questions from real data.</div></div>
+    <div class="fcard"><div class="ficon">📊</div><div class="ftitle">Real-Time Dashboard</div><div class="fdesc">Secure login-protected web dashboard. Live orders, delivery status updates, product management, customer database, support queue, broadcast messages, CSV export.</div></div>
+    <div class="fcard"><div class="ficon">🧠</div><div class="ftitle">Context-Aware Intelligence</div><div class="fdesc">The LLM receives the customer's complete Firebase context on every message — profile, past orders, current cart, live menu, active deals. It answers questions from real data, not scripts.</div></div>
+    <div class="fcard"><div class="ficon">🏗️</div><div class="ftitle">Production Architecture</div><div class="fdesc">Node.js + Express on Render. Firebase Firestore (Mumbai region). Twilio WhatsApp API. Groq LLM. Razorpay payments. UptimeRobot monitoring. Full CI/CD via GitHub.</div></div>
+    <div class="fcard"><div class="ficon">💬</div><div class="ftitle">Full Conversation Flow</div><div class="fdesc">Profile collection, product catalog browsing, cart management, address confirmation, payment selection, order confirmation. Global commands work from any state.</div></div>
+    <div class="fcard"><div class="ficon">₹0</div><div class="ftitle">Zero-Budget Trial Stack</div><div class="fdesc">Groq free tier (14,400 req/day), Firebase Spark plan, Render free hosting, Twilio sandbox. Clear upgrade path to production as revenue grows.</div></div>
   </div>
 </section>
 
 <section class="stack">
   <h2>Tech Stack</h2>
-  <div class="stack-grid">
-    <div class="stack-pill"><span class="icon">⚙️</span>Node.js + Express</div>
-    <div class="stack-pill"><span class="icon">🤖</span>Groq — Llama 3.3 70B</div>
-    <div class="stack-pill"><span class="icon">🔥</span>Firebase Firestore</div>
-    <div class="stack-pill"><span class="icon">💬</span>Twilio WhatsApp API</div>
-    <div class="stack-pill"><span class="icon">☁️</span>Render.com</div>
-    <div class="stack-pill"><span class="icon">💳</span>Razorpay</div>
-    <div class="stack-pill"><span class="icon">📊</span>Vanilla JS Dashboard</div>
-    <div class="stack-pill"><span class="icon">🐙</span>GitHub CI/CD</div>
+  <div class="sgrid">
+    <div class="spill">⚙️ Node.js + Express</div>
+    <div class="spill">🤖 Groq — Llama 3.3 70B</div>
+    <div class="spill">🔥 Firebase Firestore</div>
+    <div class="spill">💬 Twilio WhatsApp API</div>
+    <div class="spill">☁️ Render.com</div>
+    <div class="spill">💳 Razorpay</div>
+    <div class="spill">📊 Vanilla JS Dashboard</div>
+    <div class="spill">🐙 GitHub CI/CD</div>
   </div>
 </section>
 
-<section class="demo-section">
+<section class="demo-sec">
   <h2>Run it yourself</h2>
-  <p class="demo-sub">Clone and run locally in under 5 minutes</p>
-  <div class="demo-frame">
-    <div class="demo-tabs">
-      <button class="demo-tab active" onclick="showTab('local',this)">Local Setup</button>
-      <button class="demo-tab" onclick="showTab('deploy',this)">Deploy to Render</button>
-      <button class="demo-tab" onclick="showTab('structure',this)">Project Structure</button>
+  <p class="dsub">Clone and run locally in under 5 minutes</p>
+  <div class="demo-box">
+    <div class="dtabs">
+      <button class="dtab active" onclick="showTab('local',this)">Local Setup</button>
+      <button class="dtab" onclick="showTab('deploy',this)">Deploy to Render</button>
+      <button class="dtab" onclick="showTab('structure',this)">Project Structure</button>
     </div>
-    <div class="demo-content active" id="tab-local">
-      <div class="code-block"># Clone the demo repo
+    <div class="dc active" id="tab-local">
+      <div class="codeblock"># Clone the demo repo
 git clone https://github.com/SaransGoel/breaddash-demo.git
 cd breaddash-demo
 
 # Install dependencies
 npm install
 
-# Configure (optional - demo works without real keys)
+# Optional: add Groq key for live AI responses
 cp .env.example .env
-# Add your Groq key for live AI: https://console.groq.com
+# Edit .env → set GROQ_API_KEY=your_key_from_console.groq.com
 
 # Start server
 npm start
 
-# Open dashboard
-open http://localhost:3000/dashboard
-# Login: admin / breaddash123</div>
+# Open in browser
+# Landing page: http://localhost:3000
+# Chat demo:    http://localhost:3000/chat
+# Dashboard:    http://localhost:3000/dashboard</div>
     </div>
-    <div class="demo-content" id="tab-deploy">
-      <div class="code-block"># Deploy to Render (free)
-# 1. Fork this repo to your GitHub
+    <div class="dc" id="tab-deploy">
+      <div class="codeblock"># 1. Fork this repo on GitHub
 # 2. Go to render.com → New Web Service
-# 3. Connect your fork
-# 4. Settings:
-#    Build: npm install
-#    Start: npm start
-# 5. Add environment variable:
-#    GROQ_API_KEY = your_key_from_console.groq.com
-# 6. Deploy → get your live URL
+# 3. Connect your forked repo
+# 4. Configure:
+#    Build Command: npm install
+#    Start Command: node server.js
+#    Plan: Free
 #
-# For full production with real WhatsApp + Firebase:
-# See the private repo README</div>
+# 5. Add Environment Variable:
+#    GROQ_API_KEY = your_key_from_console.groq.com
+#
+# 6. Click Deploy
+# Your app will be live at: https://your-app.onrender.com</div>
     </div>
-    <div class="demo-content" id="tab-structure">
-      <div class="code-block">breaddash-demo/
-├── server.js        ← Express server + demo API
-├── dashboard.html   ← Full dashboard UI (no login needed in demo)
+    <div class="dc" id="tab-structure">
+      <div class="codeblock">breaddash-demo/
+├── server.js        ← Express server + all API routes + chat API
+├── chat.html        ← WhatsApp-style interactive bot demo
+├── dashboard.html   ← Full management dashboard (demo data)
 ├── index.html       ← This landing page
-├── package.json     ← Dependencies
+├── package.json     ← Dependencies (Express + Groq)
 ├── .env.example     ← Config template
 └── README.md        ← Full documentation</div>
     </div>
   </div>
 </section>
 
-<footer class="footer">
-  <p>Built by <a href="https://github.com/SaransGoel" target="_blank">Sarans Goel</a> · BreadDash — AI WhatsApp Delivery System</p>
+<footer>
+  <p>Built by <a href="https://github.com/SaransGoel" target="_blank">Sarans Goel</a> &nbsp;·&nbsp; BreadDash — AI WhatsApp Delivery System</p>
   <p style="margin-top:8px;">Node.js · Groq AI · Firebase · Twilio · Render</p>
 </footer>
 
 <script>
 function showTab(name, el) {
-  document.querySelectorAll('.demo-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.demo-content').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.dc').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
 }
 </script>
 </body>

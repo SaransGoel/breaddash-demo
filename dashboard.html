@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BreadDash — Login</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#f5f4f0;--surface:#fff;--border:rgba(0,0,0,.09);--border-s:rgba(0,0,0,.18);--text:#1a1a18;--t2:#6b6b67;--t3:#9e9e9a;--green:#3B6D11;--gbg:#EAF3DE;--gborder:#C0DD97;--amber:#854F0B;--abg:#FAEEDA;--aborder:#FAC775;--blue:#0C447C;--bbg:#E6F1FB;--bborder:#B5D4F4;--red:#A32D2D;--rbg:#FCEBEB;--rborder:#F09595;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
+
+/* ── LOGIN SCREEN ── */
+#login-screen{display:flex;align-items:center;justify-content:center;height:100vh;background:var(--bg);}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:36px 32px;width:360px;max-width:90vw;text-align:center;}
+.login-logo{font-size:40px;margin-bottom:12px;}
+.login-title{font-size:20px;font-weight:700;margin-bottom:4px;}
+.login-sub{font-size:12px;color:var(--t2);margin-bottom:28px;}
+.login-input{width:100%;border:1px solid var(--border-s);border-radius:8px;padding:11px 14px;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;}
+.login-input:focus{border-color:#BA7517;}
+.login-btn{width:100%;padding:12px;border-radius:8px;border:none;background:#854F0B;color:white;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;}
+.login-btn:hover{background:#633806;}
+.login-err{color:var(--red);font-size:12px;margin-top:8px;display:none;}
+.login-hint{font-size:11px;color:var(--t3);margin-top:16px;}
+
+/* ── MAIN APP ── */
+#app{display:none;height:100vh;overflow:hidden;flex-direction:column;}
+#app.show{display:flex;}
+.shell{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.brand{padding:16px 14px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.brand-icon{font-size:22px;}
+.brand-name{font-size:15px;font-weight:600;}
+.brand-sub{font-size:10px;color:var(--t2);margin-top:1px;}
+nav{flex:1;padding:8px;overflow-y:auto;}
+.nav-group{font-size:10px;color:var(--t3);padding:10px 8px 4px;text-transform:uppercase;letter-spacing:.07em;font-weight:600;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--t2);margin-bottom:1px;transition:.15s;}
+.nav-item:hover{background:var(--bg);color:var(--text);}
+.nav-item.active{background:var(--abg);color:var(--amber);font-weight:500;}
+.nav-badge{margin-left:auto;font-size:10px;background:var(--rbg);color:var(--red);padding:1px 6px;border-radius:10px;font-weight:600;}
+.ph{padding:10px 14px;border-top:1px solid var(--border);}
+.ph-title{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;font-weight:600;}
+.ph-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--t2);padding:3px 0;}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dg{background:#639922;}.da{background:#BA7517;}.dr{background:#E24B4A;}.dgr{background:#aaa;}
+.logout-btn{padding:10px 14px;border-top:1px solid var(--border);}
+.logout-btn button{width:100%;padding:7px;border-radius:7px;border:1px solid var(--border-s);background:var(--surface);cursor:pointer;font-size:12px;color:var(--t2);}
+.logout-btn button:hover{background:var(--rbg);color:var(--red);border-color:var(--rborder);}
+
+/* ── TOPBAR ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:50px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.page-title{font-size:14px;font-weight:600;}
+.topbar-right{display:flex;gap:8px;align-items:center;}
+.pill{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;}
+.pill-trial{background:var(--abg);color:var(--amber);}
+.pill-live{background:var(--gbg);color:var(--green);}
+.btn{font-size:12px;padding:6px 14px;border-radius:7px;border:1px solid var(--border-s);background:var(--surface);cursor:pointer;color:var(--text);transition:.15s;}
+.btn:hover{background:var(--bg);}
+.btn-p{background:var(--abg);border-color:var(--aborder);color:var(--amber);}
+.btn-g{background:var(--gbg);border-color:var(--gborder);color:var(--green);}
+.content{flex:1;overflow-y:auto;padding:18px 20px;}
+.tab{display:none;}.tab.active{display:block;}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;}
+.card-title{font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.sc{background:var(--bg);border-radius:8px;padding:14px;}
+.sl{font-size:11px;color:var(--t2);margin-bottom:5px;}
+.sv{font-size:24px;font-weight:600;}
+.ss{font-size:11px;color:var(--t2);margin-top:3px;}
+.ss.up{color:var(--green);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{font-size:11px;color:var(--t2);font-weight:500;padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border:none;}
+tr:hover td{background:var(--bg);}
+.status{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;white-space:nowrap;}
+.s-pending{background:var(--abg);color:var(--amber);}
+.s-out{background:var(--bbg);color:var(--blue);}
+.s-done{background:var(--gbg);color:var(--green);}
+.s-cancel{background:var(--rbg);color:var(--red);}
+.s-ok{background:var(--gbg);color:var(--green);}
+.s-warn{background:var(--abg);color:var(--amber);}
+
+/* ── FORMS ── */
+input[type=text],input[type=password],textarea,select{border:1px solid var(--border-s);border-radius:7px;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;width:100%;}
+input:focus,textarea:focus{border-color:#BA7517;}
+.form-row{margin-bottom:12px;}
+.form-label{font-size:11px;color:var(--t2);margin-bottom:5px;font-weight:500;display:block;}
+
+/* ── PROD GRID ── */
+.prod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.prod-card{border:1px solid var(--border);border-radius:10px;padding:14px;background:var(--surface);}
+.toggle{position:relative;width:34px;height:18px;cursor:pointer;display:inline-block;}
+.toggle input{opacity:0;width:0;height:0;}
+.tsl{position:absolute;inset:0;background:#ccc;border-radius:18px;transition:.2s;}
+.tsl:before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:white;border-radius:50%;transition:.2s;}
+input:checked+.tsl{background:var(--green);}
+input:checked+.tsl:before{transform:translateX(16px);}
+
+/* ── LOG ── */
+.log-box{background:#1a1a18;border-radius:8px;padding:12px;font-family:monospace;font-size:11px;height:180px;overflow-y:auto;}
+.log-line{padding:2px 0;line-height:1.5;}
+.li{color:#a8e063;}.lw{color:#fbbf24;}.le{color:#f87171;}.lm{color:#7ec8e3;}
+
+/* ── TICKER ── */
+.ticker-wrap{background:var(--abg);border-bottom:1px solid var(--aborder);padding:5px 20px;font-size:11px;color:var(--amber);display:flex;align-items:center;gap:8px;flex-shrink:0;overflow:hidden;}
+.ticker-track{display:flex;gap:48px;animation:ticker 30s linear infinite;white-space:nowrap;}
+@keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.filter-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.filter-btn{font-size:11px;padding:5px 12px;border-radius:20px;border:1px solid var(--border-s);background:var(--surface);cursor:pointer;color:var(--t2);}
+.filter-btn.active{background:var(--abg);border-color:var(--aborder);color:var(--amber);}
+.empty-state{text-align:center;padding:40px;color:var(--t2);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:12px;padding:24px;width:420px;max-width:90vw;}
+.modal-title{font-size:15px;font-weight:600;margin-bottom:16px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+::-webkit-scrollbar{width:5px;}.
+::-webkit-scrollbar-thumb{background:var(--border-s);border-radius:3px;}
+.waitlist-badge{background:var(--rbg);color:var(--red);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.session-info{font-size:11px;color:var(--t3);padding:8px 14px;text-align:center;border-bottom:1px solid var(--border);}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">🍞</div>
+    <div class="login-title">BreadDash</div>
+    <div class="login-sub">Master Control Panel — Sign in to continue</div>
+    <input class="login-input" type="text" id="login-user" placeholder="Username" autocomplete="username">
+    <input class="login-input" type="password" id="login-pass" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-err" id="login-err">Incorrect credentials. Please try again.</div>
+    <div class="login-hint">Default: admin / breaddash123<br>Change in Render environment variables</div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="app">
+  <div class="shell">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🍞</div>
+        <div>
+          <div class="brand-name">BreadDash</div>
+          <div class="brand-sub">Master Control Panel</div>
+        </div>
+      </div>
+      <div class="session-info" id="session-info">Signed in as admin</div>
+      <nav>
+        <div class="nav-group">Overview</div>
+        <div class="nav-item active" onclick="go('overview',this)">📊 Dashboard</div>
+        <div class="nav-group">Operations</div>
+        <div class="nav-item" onclick="go('orders',this)">📦 Orders <span class="nav-badge" id="pending-badge">0</span></div>
+        <div class="nav-item" onclick="go('products',this)">🏪 Products</div>
+        <div class="nav-item" onclick="go('customers',this)">👤 Customers</div>
+        <div class="nav-item" onclick="go('waitlist',this)">🙋 Support Queue <span class="nav-badge" id="wl-badge">0</span></div>
+        <div class="nav-item" onclick="go('broadcast',this)">📢 Broadcast</div>
+        <div class="nav-group">Connections</div>
+        <div class="nav-item" onclick="go('whatsapp',this)">💬 WhatsApp</div>
+        <div class="nav-item" onclick="go('payments',this)">💳 Payments</div>
+        <div class="nav-item" onclick="go('ai',this)">🤖 AI Engine</div>
+        <div class="nav-group">Setup</div>
+        <div class="nav-item" onclick="go('setup',this)">🚀 Deploy Guide</div>
+        <div class="nav-item" onclick="go('config',this)">⚙️ Config</div>
+      </nav>
+      <div class="ph">
+        <div class="ph-title">Platform Health</div>
+        <div class="ph-row"><span>Server</span><div class="dot dgr" id="ph-sv"></div></div>
+        <div class="ph-row"><span>WhatsApp</span><div class="dot dgr" id="ph-wa"></div></div>
+        <div class="ph-row"><span>Groq AI</span><div class="dot dgr" id="ph-ai"></div></div>
+        <div class="ph-row"><span>Firebase</span><div class="dot dgr" id="ph-fb"></div></div>
+        <div class="ph-row"><span>Razorpay</span><div class="dot da"></div></div>
+      </div>
+      <div class="logout-btn"><button onclick="doLogout()">🔓 Sign Out</button></div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <div class="page-title" id="page-title">Dashboard</div>
+        <div class="topbar-right">
+          <span class="pill pill-trial">Trial</span>
+          <span class="pill pill-live" id="server-pill">● Connecting...</span>
+          <button class="btn" onclick="loadAll()">↻ Refresh</button>
+        </div>
+      </div>
+      <div style="background:rgba(180,83,9,0.12);border-bottom:1px solid rgba(180,83,9,0.25);padding:6px 20px;font-size:11px;color:#F59E0B;text-align:center;flex-shrink:0;">
+  📊 Demo Mode — showing sample data · <a href="/chat" style="color:#F59E0B;font-weight:600;">Try the live bot →</a> · <a href="/" style="color:#F59E0B;">Back to home</a>
+</div>
+<div class="ticker-wrap">🔥
+        <div class="ticker-track">
+          <span>Buy 2 White Bread → get Pav FREE!</span>
+          <span>First order gets a FREE Pav pack!</span>
+          <span>Daily subscribers save 10% every order!</span>
+          <span>Milk & Eggs now available!</span>
+          <span>Buy 2 White Bread → get Pav FREE!</span>
+          <span>First order gets a FREE Pav pack!</span>
+          <span>Daily subscribers save 10% every order!</span>
+          <span>Milk & Eggs now available!</span>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- DASHBOARD -->
+        <div class="tab active" id="tab-overview">
+          <div class="sg">
+            <div class="sc"><div class="sl">Today's Orders</div><div class="sv" id="s-orders">—</div><div class="ss up" id="s-orders-sub">loading...</div></div>
+            <div class="sc"><div class="sl">Revenue Today</div><div class="sv" id="s-rev">—</div><div class="ss up">confirmed orders</div></div>
+            <div class="sc"><div class="sl">Pending Delivery</div><div class="sv" id="s-pend">—</div><div class="ss" style="color:var(--amber)">need delivery</div></div>
+            <div class="sc"><div class="sl">Total Customers</div><div class="sv" id="s-cust">—</div><div class="ss">in database</div></div>
+          </div>
+          <div class="g2">
+            <div class="card">
+              <div class="card-title">Recent Orders <span style="font-size:10px;color:var(--green);font-weight:400;">● live</span></div>
+              <div id="recent-orders-body"><div class="empty-state">Loading...</div></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Support Queue</div>
+              <div id="waitlist-preview"><div class="empty-state" style="padding:20px;">No pending support requests</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Server Log <button class="btn" style="font-size:11px;padding:3px 8px;" onclick="loadAll()">↻</button></div>
+            <div class="log-box" id="log-box"><div class="log-line lm">Connecting to server...</div></div>
+          </div>
+        </div>
+
+        <!-- ORDERS -->
+        <div class="tab" id="tab-orders">
+          <div class="filter-row" id="order-filters">
+            <button class="filter-btn active" onclick="filterOrders('all',this)">All</button>
+            <button class="filter-btn" onclick="filterOrders('confirmed',this)">Confirmed</button>
+            <button class="filter-btn" onclick="filterOrders('out_for_delivery',this)">Out for Delivery</button>
+            <button class="filter-btn" onclick="filterOrders('delivered',this)">Delivered</button>
+            <button class="filter-btn" onclick="filterOrders('cancelled',this)">Cancelled</button>
+          </div>
+          <div class="card">
+            <div class="card-title">Live Orders <div style="display:flex;gap:6px;"><button class="btn" onclick="loadOrders()">↻</button><button class="btn btn-p" onclick="exportCSV()">Export CSV</button></div></div>
+            <div id="orders-wrap"><div class="empty-state">Loading...</div></div>
+          </div>
+        </div>
+
+        <!-- PRODUCTS -->
+        <div class="tab" id="tab-products">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div style="font-size:13px;font-weight:600;">Product Catalog <span style="font-size:11px;color:var(--t2);font-weight:400;">syncs with bot automatically</span></div>
+            <button class="btn btn-p" onclick="openAddProduct()">+ Add Product</button>
+          </div>
+          <div class="prod-grid" id="prod-grid"><div class="empty-state">Loading...</div></div>
+        </div>
+
+        <!-- CUSTOMERS -->
+        <div class="tab" id="tab-customers">
+          <div class="card">
+            <div class="card-title">Customer Database <button class="btn" style="font-size:11px;padding:3px 8px;" onclick="loadCustomers()">↻</button></div>
+            <div id="customers-wrap"><div class="empty-state">Loading...</div></div>
+          </div>
+        </div>
+
+        <!-- SUPPORT QUEUE -->
+        <div class="tab" id="tab-waitlist">
+          <div class="card">
+            <div class="card-title">Support Queue — Customers Needing Help <button class="btn" style="font-size:11px;padding:3px 8px;" onclick="loadWaitlist()">↻</button></div>
+            <div id="waitlist-wrap"><div class="empty-state">Loading...</div></div>
+          </div>
+        </div>
+
+        <!-- BROADCAST -->
+        <div class="tab" id="tab-broadcast">
+          <div class="card">
+            <div class="card-title">Send WhatsApp Broadcast</div>
+            <div class="filter-row">
+              <button class="filter-btn" onclick="setTpl('deal')">🔥 Flash Deal</button>
+              <button class="filter-btn" onclick="setTpl('morning')">🌅 Morning</button>
+              <button class="filter-btn" onclick="setTpl('new')">🎉 New Product</button>
+            </div>
+            <div class="form-row"><textarea id="broadcast-msg" rows="5" placeholder="Type your message...">🔥 Flash deal!\n\nBuy 2 White Bread → get FREE Pav!\n\nReply ORDER to grab it! — GC11 DoorDash</textarea></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:11px;color:var(--t2);">Sends to all opted-in customers</span>
+              <button class="btn btn-p" onclick="sendBroadcast()">Send via WhatsApp →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- WHATSAPP -->
+        <div class="tab" id="tab-whatsapp">
+          <div class="card">
+            <div class="card-title">WhatsApp Configuration</div>
+            <div style="background:var(--bg);border-radius:8px;padding:14px;font-size:12px;line-height:2;font-family:monospace;" id="wa-config">Loading...</div>
+            <div style="margin-top:12px;font-size:12px;color:var(--t2);">
+              <strong>Sandbox join code:</strong> join toward-thou<br>
+              <strong>Twilio number:</strong> +1 415 523 8886<br>
+              <strong>Webhook:</strong> <span id="webhook-url">loading...</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Production WhatsApp — Meta Business API</div>
+            <div style="font-size:12px;color:var(--t2);line-height:1.8;">
+              To show your shop name instead of "Twilio" and remove the sandbox join requirement:<br>
+              1. Go to <strong>business.facebook.com</strong> → Create Business Account<br>
+              2. Add WhatsApp → Get Started → Add Phone Number<br>
+              3. Set Display Name: <strong>GC11 DoorDash</strong> + upload logo<br>
+              4. Once approved (2-3 days) → update TWILIO_WHATSAPP_NUMBER in Render
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px;">
+              <button class="btn btn-p" onclick="window.open('https://business.facebook.com')">Open Meta Business →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAYMENTS -->
+        <div class="tab" id="tab-payments">
+          <div class="g3" style="margin-bottom:16px;">
+            <div class="sc"><div class="sl">Collected Today</div><div class="sv" id="p-online">—</div><div class="ss up">online</div></div>
+            <div class="sc"><div class="sl">COD Pending</div><div class="sv" id="p-cod">—</div><div class="ss" style="color:var(--amber)">collect at door</div></div>
+            <div class="sc"><div class="sl">Total Revenue</div><div class="sv" id="p-total">—</div><div class="ss up">all orders</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Pending COD — Collect Cash at Delivery</div>
+            <div id="cod-list"><div class="empty-state">Loading...</div></div>
+          </div>
+        </div>
+
+        <!-- AI ENGINE -->
+        <div class="tab" id="tab-ai">
+          <div class="card">
+            <div class="card-title">AI Engine — Groq Llama 3.3 70B</div>
+            <div class="g3" style="margin-bottom:16px;">
+              <div class="sc"><div class="sl">Model</div><div style="font-size:14px;font-weight:600;margin-top:4px;">Llama 3.3 70B</div></div>
+              <div class="sc"><div class="sl">Provider</div><div style="font-size:14px;font-weight:600;margin-top:4px;">Groq (Free)</div></div>
+              <div class="sc"><div class="sl">Daily Limit</div><div style="font-size:14px;font-weight:600;margin-top:4px;">14,400 req</div></div>
+            </div>
+            <div style="font-size:12px;color:var(--t2);line-height:1.8;">
+              The bot loads your customer profile, order history, current cart, menu, and deals from Firebase before every message. It gives all this to Groq's LLM so it can answer any customer question accurately from real data.<br><br>
+              Upgrade path: Groq Free → Claude Haiku 4.5 ($1/1M tokens) when daily orders exceed 50.
+            </div>
+          </div>
+        </div>
+
+        <!-- DEPLOY GUIDE -->
+        <div class="tab" id="tab-setup">
+          <div class="card">
+            <div class="card-title">Your Live URLs</div>
+            <div style="font-size:13px;line-height:2.2;">
+              🌐 <strong>Server:</strong> <a href="https://whatsapp-bot-e-commerce.onrender.com" target="_blank" style="color:var(--blue);">whatsapp-bot-e-commerce.onrender.com</a><br>
+              📊 <strong>Dashboard:</strong> <a href="https://whatsapp-bot-e-commerce.onrender.com/dashboard" target="_blank" style="color:var(--blue);">whatsapp-bot-e-commerce.onrender.com/dashboard</a><br>
+              🔗 <strong>Webhook:</strong> whatsapp-bot-e-commerce.onrender.com/webhook/whatsapp<br>
+              📱 <strong>Health:</strong> <a href="https://whatsapp-bot-e-commerce.onrender.com/api/health" target="_blank" style="color:var(--blue);">whatsapp-bot-e-commerce.onrender.com/api/health</a>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Remaining Steps</div>
+            <div style="display:flex;flex-direction:column;gap:0;">
+              <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>✅</span><div><strong>Server on Render</strong> — live 24/7 at onrender.com</div></div>
+              <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>✅</span><div><strong>UptimeRobot</strong> — pinging every 5 min</div></div>
+              <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>✅</span><div><strong>Firebase</strong> — storing orders and customers</div></div>
+              <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>✅</span><div><strong>Dashboard secured</strong> — login required</div></div>
+              <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>⏳</span><div><strong>Meta WhatsApp Business API</strong> — apply at business.facebook.com for your shop name + logo on WhatsApp</div></div>
+              <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>⏳</span><div><strong>Razorpay KYC</strong> — Aadhaar + PAN + Bank → 2-3 days → live UPI payments</div></div>
+              <div style="display:flex;gap:10px;padding:10px 0;font-size:12px;"><span>⏳</span><div><strong>FSSAI registration</strong> — required for food delivery business</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONFIG -->
+        <div class="tab" id="tab-config">
+          <div class="card" style="margin-bottom:14px;">
+            <div class="card-title">Change Dashboard Password</div>
+            <div style="font-size:12px;color:var(--t2);margin-bottom:12px;">To change credentials, update these in your Render environment variables and redeploy:</div>
+            <div class="g2">
+              <div class="form-row"><div class="form-label">DASHBOARD_USER (current: admin)</div><input type="text" placeholder="New username"></div>
+              <div class="form-row"><div class="form-label">DASHBOARD_SECRET (current: breaddash123)</div><input type="password" placeholder="New password"></div>
+            </div>
+            <div style="font-size:11px;color:var(--t2);">After changing: Render → Environment → Update values → Redeploy</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Server Connection</div>
+            <div class="form-row">
+              <div class="form-label">Server URL</div>
+              <div style="display:flex;gap:8px;">
+                <input type="text" id="server-url-input" placeholder="https://your-app.onrender.com">
+                <button class="btn btn-p" onclick="saveServer()">Connect</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-title">Add New Product</div>
+    <div class="form-row"><label class="form-label">Product Name</label><input type="text" id="np-name" placeholder="e.g. Sourdough Bread (300g)"></div>
+    <div style="display:flex;gap:10px;">
+      <div class="form-row" style="flex:0 0 80px;"><label class="form-label">Emoji</label><input type="text" id="np-emoji" placeholder="🍞"></div>
+      <div class="form-row" style="flex:1;"><label class="form-label">Price (₹)</label><input type="text" id="np-price" placeholder="65"></div>
+      <div class="form-row" style="flex:1;"><label class="form-label">Unit</label><input type="text" id="np-unit" placeholder="loaf / pack / litre"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" onclick="addProduct()">Add Product</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── AUTH ──────────────────────────────────────────────────────
+const VALID_USER = 'admin';
+let SERVER = localStorage.getItem('bd_server') || window.location.origin;
+let SESSION_KEY = null;
+
+function autoLogin() {
+  document.getElementById('login-user').value = 'admin';
+  document.getElementById('login-pass').value = 'breaddash123';
+  doLogin();
+}
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value.trim();
+  const storedPass = localStorage.getItem('bd_pass') || 'breaddash123';
+  const storedUser = localStorage.getItem('bd_user') || 'admin';
+  if (u === storedUser && p === storedPass) {
+    SESSION_KEY = btoa(u + ':' + p + ':' + Date.now());
+    sessionStorage.setItem('bd_session', SESSION_KEY);
+    sessionStorage.setItem('bd_user', u);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').classList.add('show');
+    document.getElementById('session-info').textContent = `Signed in as ${u}`;
+    document.getElementById('server-url-input').value = SERVER;
+    initApp();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+    setTimeout(() => document.getElementById('login-err').style.display = 'none', 3000);
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('bd_session');
+  sessionStorage.removeItem('bd_user');
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+// Check existing session on load
+window.addEventListener('load', () => {
+  // Demo: auto-login so portfolio visitors skip login screen
+  setTimeout(autoLogin, 200);
+  const s = sessionStorage.getItem('bd_session');
+  const u = sessionStorage.getItem('bd_user');
+  if (s && u) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').classList.add('show');
+    document.getElementById('session-info').textContent = `Signed in as ${u}`;
+    document.getElementById('server-url-input').value = SERVER;
+    initApp();
+  }
+  // Allow Enter on login
+  document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+});
+
+// ── NAV ───────────────────────────────────────────────────────
+const TITLES = {overview:'Dashboard',orders:'Orders',products:'Products',customers:'Customers',waitlist:'Support Queue',broadcast:'Broadcast',whatsapp:'WhatsApp',payments:'Payments',ai:'AI Engine',setup:'Deploy Guide',config:'Config'};
+let currentFilter = 'all';
+let allOrders = [];
+
+function go(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('page-title').textContent = TITLES[name]||name;
+  if(name==='orders') loadOrders();
+  if(name==='products') loadProducts();
+  if(name==='customers') loadCustomers();
+  if(name==='waitlist') loadWaitlist();
+  if(name==='payments') loadPayments();
+  if(name==='whatsapp') loadWAConfig();
+}
+
+// ── API ───────────────────────────────────────────────────────
+async function api(path, opts={}) {
+  const r = await fetch(SERVER + path, {
+    ...opts,
+    headers: {'Content-Type':'application/json','x-dashboard-key': localStorage.getItem('bd_pass')||'breaddash123', ...(opts.headers||{})}
+  });
+  if(!r.ok) throw new Error(r.status + ' ' + r.statusText);
+  return r.json();
+}
+
+// ── HEALTH ────────────────────────────────────────────────────
+async function checkHealth() {
+  try {
+    const h = await fetch(SERVER + '/api/health').then(r=>r.json());
+    const sv = h.server?.status==='ok';
+    document.getElementById('ph-sv').className = 'dot ' + (sv?'dg':'dr');
+    document.getElementById('ph-wa').className = 'dot ' + (h.twilio?.status==='configured'?'dg':'da');
+    document.getElementById('ph-ai').className = 'dot ' + (h.groq?.status==='configured'?'dg':'da');
+    document.getElementById('ph-fb').className = 'dot ' + (h.firebase?.status==='ok'?'dg':'da');
+    document.getElementById('server-pill').textContent = '● Server Live';
+    document.getElementById('server-pill').style.cssText = 'background:var(--gbg);color:var(--green);font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;';
+    log(`[${time()}] ✓ Health OK — server uptime ${h.server?.uptime}`, 'li');
+  } catch(e) {
+    document.getElementById('ph-sv').className = 'dot dr';
+    document.getElementById('server-pill').textContent = '● Offline';
+    document.getElementById('server-pill').style.cssText = 'background:var(--rbg);color:var(--red);font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;';
+    log(`[${time()}] ✗ Cannot reach ${SERVER}`, 'le');
+  }
+}
+
+// ── ORDERS ────────────────────────────────────────────────────
+const SC = {confirmed:'s-pending',out_for_delivery:'s-out',delivered:'s-done',cancelled:'s-cancel'};
+const SL = {confirmed:'Confirmed',out_for_delivery:'Out for Delivery',delivered:'Delivered',cancelled:'Cancelled'};
+
+async function loadOrders() {
+  try {
+    const d = await api('/api/orders?limit=100');
+    allOrders = d.orders || [];
+    renderOrders(currentFilter);
+    updateStats();
+    updatePendingBadge();
+    renderRecentOrders();
+    renderCOD();
+  } catch(e) {
+    document.getElementById('orders-wrap').innerHTML = `<div class="empty-state">⚠ ${e.message}</div>`;
+  }
+}
+
+function renderOrders(f) {
+  const data = f==='all' ? allOrders : allOrders.filter(o=>o.status===f);
+  if(!data.length) { document.getElementById('orders-wrap').innerHTML='<div class="empty-state">No orders found</div>'; return; }
+  document.getElementById('orders-wrap').innerHTML = `<table>
+    <thead><tr><th>Order ID</th><th>Flat</th><th>Phone</th><th>Amount</th><th>Pay</th><th>Time</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>${data.map(o=>{
+      const t = o.createdAt?.seconds ? new Date(o.createdAt.seconds*1000).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : '—';
+      return `<tr>
+        <td style="font-size:11px;color:var(--t2);">${o.orderId}</td>
+        <td style="font-weight:600;">${o.flatNumber||'—'}</td>
+        <td style="font-size:11px;color:var(--t2);">${(o.phone||'').replace(/(\+\d{2})(\d{5})(\d{5})/,'$1*****$3')}</td>
+        <td style="font-weight:600;">₹${o.total}</td>
+        <td>${o.paymentMode||'—'}</td>
+        <td style="color:var(--t2);">${t}</td>
+        <td><span class="status ${SC[o.status]||'s-pending'}">${SL[o.status]||o.status}</span></td>
+        <td><select style="font-size:10px;padding:3px 6px;" onchange="updateStatus('${o.orderId}',this.value)">
+          <option value="">Update...</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="out_for_delivery">Out for Delivery</option>
+          <option value="delivered">Delivered ✓</option>
+          <option value="cancelled">Cancelled</option>
+        </select></td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+function filterOrders(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('#order-filters .filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderOrders(f);
+}
+
+async function updateStatus(id, status) {
+  if(!status) return;
+  try {
+    await api(`/api/orders/${id}`, {method:'PATCH', body:JSON.stringify({status})});
+    const o = allOrders.find(x=>x.orderId===id||x.id===id);
+    if(o) o.status = status;
+    renderOrders(currentFilter);
+    updateStats();
+    updatePendingBadge();
+    renderCOD();
+    log(`[${time()}] ✓ Order ${id} → ${SL[status]}`, 'li');
+  } catch(e) { alert('Error: '+e.message); }
+}
+
+function updateStats() {
+  const today = new Date().toDateString();
+  const todayO = allOrders.filter(o=>o.createdAt?.seconds && new Date(o.createdAt.seconds*1000).toDateString()===today);
+  const pending = allOrders.filter(o=>o.status==='confirmed'||o.status==='out_for_delivery');
+  const rev = todayO.reduce((s,o)=>s+o.total,0);
+  document.getElementById('s-orders').textContent = todayO.length;
+  document.getElementById('s-orders-sub').textContent = allOrders.length + ' total';
+  document.getElementById('s-rev').textContent = '₹'+rev.toLocaleString('en-IN');
+  document.getElementById('s-pend').textContent = pending.length;
+  const phones = new Set(allOrders.map(o=>o.phone)).size;
+  document.getElementById('s-cust').textContent = phones;
+
+  // payments tab
+  const cod = allOrders.filter(o=>o.paymentMode==='cod'&&o.status!=='delivered').reduce((s,o)=>s+o.total,0);
+  const online = todayO.filter(o=>o.paymentMode!=='cod').reduce((s,o)=>s+o.total,0);
+  const total = allOrders.reduce((s,o)=>s+o.total,0);
+  document.getElementById('p-cod').textContent = '₹'+cod.toLocaleString('en-IN');
+  document.getElementById('p-online').textContent = '₹'+online.toLocaleString('en-IN');
+  document.getElementById('p-total').textContent = '₹'+total.toLocaleString('en-IN');
+}
+
+function updatePendingBadge() {
+  document.getElementById('pending-badge').textContent = allOrders.filter(o=>o.status==='confirmed').length;
+}
+
+function renderRecentOrders() {
+  const html = allOrders.slice(0,6).map(o=>`<tr>
+    <td style="font-weight:600;">${o.flatNumber||'—'}</td>
+    <td style="color:var(--t2);font-size:11px;">₹${o.total}</td>
+    <td>${o.paymentMode||'—'}</td>
+    <td><span class="status ${SC[o.status]||'s-pending'}">${SL[o.status]||o.status}</span></td>
+  </tr>`).join('');
+  document.getElementById('recent-orders-body').innerHTML = allOrders.length
+    ? `<table><thead><tr><th>Flat</th><th>Amount</th><th>Pay</th><th>Status</th></tr></thead><tbody>${html}</tbody></table>`
+    : '<div class="empty-state" style="padding:20px;">No orders yet</div>';
+}
+
+function renderCOD() {
+  const cod = allOrders.filter(o=>o.paymentMode==='cod'&&o.status!=='delivered'&&o.status!=='cancelled');
+  document.getElementById('cod-list').innerHTML = cod.length
+    ? `<table><thead><tr><th>Flat</th><th>Phone</th><th>Amount</th><th>Action</th></tr></thead><tbody>
+      ${cod.map(o=>`<tr>
+        <td style="font-weight:600;">${o.flatNumber}</td>
+        <td style="font-size:11px;color:var(--t2);">${(o.phone||'').slice(-5)}</td>
+        <td>₹${o.total}</td>
+        <td><button class="btn btn-g" style="font-size:10px;padding:3px 8px;" onclick="updateStatus('${o.orderId}','delivered')">Mark Paid ✓</button></td>
+      </tr>`).join('')}
+    </tbody></table>`
+    : '<div class="empty-state" style="padding:20px;">✅ No pending COD</div>';
+}
+
+// ── PRODUCTS ──────────────────────────────────────────────────
+async function loadProducts() {
+  try {
+    const d = await api('/api/products');
+    renderProducts(d.products||[]);
+  } catch(e) { document.getElementById('prod-grid').innerHTML=`<div class="empty-state">⚠ ${e.message}</div>`; }
+}
+
+function renderProducts(products) {
+  const grid = document.getElementById('prod-grid');
+  grid.innerHTML = '';
+  products.forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'prod-card';
+    div.innerHTML = `
+      <div style="font-size:28px;margin-bottom:8px;">${p.emoji||'📦'}</div>
+      <div style="font-size:13px;font-weight:500;">${p.name}</div>
+      <div style="font-size:20px;font-weight:600;color:var(--amber);margin-top:4px;">₹${p.price}</div>
+      <div style="font-size:11px;color:var(--t2);margin-top:2px;">${p.active?'✓ Active':'✗ Inactive'}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+        <label class="toggle"><input type="checkbox" ${p.active?'checked':''} onchange="toggleProd('${p.id}',this.checked)"><span class="tsl"></span></label>
+        <span style="font-size:11px;color:var(--t2);">${p.active?'In menu':'Hidden'}</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px;">
+        <button class="btn btn-p" style="font-size:11px;padding:4px 10px;" onclick="editPrice('${p.id}','${p.name}',${p.price})">Edit Price</button>
+      </div>`;
+    grid.appendChild(div);
+  });
+  const add = document.createElement('div');
+  add.className='prod-card';
+  add.style.cssText='border:2px dashed var(--border-s);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px;cursor:pointer;';
+  add.innerHTML='<div style="font-size:28px;color:var(--t3);">+</div><div style="font-size:12px;color:var(--t2);margin-top:8px;">Add product</div>';
+  add.onclick=openAddProduct;
+  grid.appendChild(add);
+}
+
+async function toggleProd(id, active) {
+  try { await api(`/api/products/${id}`,{method:'PATCH',body:JSON.stringify({active})}); loadProducts(); log(`[${time()}] ✓ Product toggled → ${active?'active':'inactive'}`, 'li'); }
+  catch(e) { alert(e.message); }
+}
+
+async function editPrice(id, name, cur) {
+  const p = prompt(`New price for ${name}:`, cur);
+  if(!p||isNaN(p)) return;
+  try { await api(`/api/products/${id}`,{method:'PATCH',body:JSON.stringify({price:parseInt(p)})}); loadProducts(); log(`[${time()}] ✓ ${name} → ₹${p}`, 'li'); }
+  catch(e) { alert(e.message); }
+}
+
+function openAddProduct() { document.getElementById('add-modal').classList.add('open'); }
+function closeModal() { document.getElementById('add-modal').classList.remove('open'); }
+
+async function addProduct() {
+  const name=document.getElementById('np-name').value;
+  const emoji=document.getElementById('np-emoji').value||'📦';
+  const price=parseInt(document.getElementById('np-price').value);
+  const unit=document.getElementById('np-unit').value||'piece';
+  if(!name||!price) return alert('Fill Name and Price');
+  try {
+    await api('/api/products',{method:'POST',body:JSON.stringify({name,emoji,price,unit,active:true})});
+    closeModal(); loadProducts();
+    log(`[${time()}] ✓ "${name}" added`, 'li');
+  } catch(e) { alert(e.message); }
+}
+
+// ── CUSTOMERS ─────────────────────────────────────────────────
+async function loadCustomers() {
+  try {
+    const d = await api('/api/customers');
+    const customers = d.customers || [];
+    document.getElementById('customers-wrap').innerHTML = customers.length
+      ? `<table><thead><tr><th>Name</th><th>Phone</th><th>Flat</th><th>Orders</th><th>Spend</th><th>First Time</th></tr></thead><tbody>
+        ${customers.map(c=>`<tr>
+          <td style="font-weight:500;">${c.name||'—'}</td>
+          <td style="font-size:11px;color:var(--t2);">${(c.phone||'').replace(/(\+\d{2})(\d{5})(\d{5})/,'$1*****$3')}</td>
+          <td>${c.flatNumber||'—'}</td>
+          <td>${c.totalOrders||0}</td>
+          <td>₹${c.totalSpend||0}</td>
+          <td>${c.isFirstTime?'<span class="status s-pending">New</span>':'<span class="status s-done">Returning</span>'}</td>
+        </tr>`).join('')}
+      </tbody></table>`
+      : '<div class="empty-state">No customers yet</div>';
+  } catch(e) {
+    document.getElementById('customers-wrap').innerHTML=`<div class="empty-state">⚠ ${e.message}</div>`;
+  }
+}
+
+// ── WAITLIST ──────────────────────────────────────────────────
+async function loadWaitlist() {
+  try {
+    const d = await api('/api/waitlist');
+    const items = d.waitlist || [];
+    document.getElementById('wl-badge').textContent = items.filter(w=>!w.resolved).length;
+    renderWaitlist(items);
+    // preview on dashboard
+    const preview = items.filter(w=>!w.resolved).slice(0,3);
+    document.getElementById('waitlist-preview').innerHTML = preview.length
+      ? preview.map(w=>`<div style="border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;">
+          <div style="font-size:12px;font-weight:500;">${w.phone}</div>
+          <div style="font-size:11px;color:var(--t2);margin-top:3px;">${w.reason||'Requested support'}</div>
+          <span class="waitlist-badge" style="margin-top:6px;display:inline-block;">Waiting</span>
+        </div>`).join('')
+      : '<div class="empty-state" style="padding:20px;">No pending support requests ✅</div>';
+  } catch(e) { console.error(e); }
+}
+
+function renderWaitlist(items) {
+  document.getElementById('waitlist-wrap').innerHTML = items.length
+    ? `<table><thead><tr><th>Phone</th><th>Reason</th><th>Time</th><th>Status</th><th>Action</th></tr></thead><tbody>
+      ${items.map(w=>{
+        const t = w.addedAt?.seconds ? new Date(w.addedAt.seconds*1000).toLocaleString('en-IN') : '—';
+        return `<tr>
+          <td style="font-weight:500;">${w.phone}</td>
+          <td style="color:var(--t2);font-size:11px;max-width:200px;">${w.reason||'—'}</td>
+          <td style="font-size:11px;color:var(--t2);">${t}</td>
+          <td>${w.resolved?'<span class="status s-done">Resolved</span>':'<span class="status s-pending">Waiting</span>'}</td>
+          <td>${!w.resolved?`<button class="btn btn-g" style="font-size:10px;padding:3px 8px;" onclick="resolveWaitlist('${w.phone}')">Mark Resolved</button>`:''}</td>
+        </tr>`;
+      }).join('')}
+    </tbody></table>`
+    : '<div class="empty-state">No support requests</div>';
+}
+
+async function resolveWaitlist(phone) {
+  try {
+    await api(`/api/waitlist/${phone}`, {method:'PATCH', body:JSON.stringify({resolved:true})});
+    loadWaitlist();
+    log(`[${time()}] ✓ Waitlist ${phone} → resolved`, 'li');
+  } catch(e) { alert(e.message); }
+}
+
+// ── BROADCAST ─────────────────────────────────────────────────
+const TPLS = {
+  deal: `🔥 Flash deal from ${localStorage.getItem('bd_shop')||'GC11 DoorDash'}!\n\nBuy 2 White Bread → get FREE Pav! 🍞\n\nToday only — reply ORDER to grab it!`,
+  morning: `🌅 Good morning!\n\nFresh delivery today — order before 9 AM for delivery by 10 AM.\n\nReply ORDER to start!`,
+  new: `🎉 New product alert!\n\nFull Cream Milk (1L) — ₹62 now available!\n\nAdd to your order — reply ORDER!`,
+};
+function setTpl(t) { document.getElementById('broadcast-msg').value = TPLS[t]||''; }
+
+async function sendBroadcast() {
+  const msg = document.getElementById('broadcast-msg').value.trim();
+  if(!msg) return alert('Write a message first');
+  if(!confirm(`Send to all customers?\n\n${msg.substring(0,100)}`)) return;
+  try {
+    const d = await api('/api/broadcast',{method:'POST',body:JSON.stringify({message:msg})});
+    alert(`✅ Sent to ${d.sent} customers!`);
+    log(`[${time()}] 📢 Broadcast → ${d.sent} customers`, 'li');
+  } catch(e) { alert(e.message); }
+}
+
+// ── WA CONFIG ─────────────────────────────────────────────────
+async function loadWAConfig() {
+  try {
+    const h = await fetch(SERVER+'/api/health').then(r=>r.json());
+    document.getElementById('wa-config').textContent =
+      `Twilio Status: ${h.twilio?.status}\nGroq Status: ${h.groq?.status}\nFirebase: ${h.firebase?.status}`;
+    document.getElementById('webhook-url').textContent = SERVER + '/webhook/whatsapp';
+  } catch(e) {}
+}
+
+// ── EXPORT ────────────────────────────────────────────────────
+function exportCSV() {
+  if(!allOrders.length) return alert('No orders');
+  const rows = [['OrderID','Flat','Phone','Total','Payment','Status','Date']];
+  allOrders.forEach(o=>{
+    const d = o.createdAt?.seconds ? new Date(o.createdAt.seconds*1000).toLocaleDateString('en-IN') : '—';
+    rows.push([o.orderId,o.flatNumber,o.phone,o.total,o.paymentMode,o.status,d]);
+  });
+  const a = document.createElement('a');
+  a.href = 'data:text/csv,' + encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));
+  a.download = `orders-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+}
+
+// ── LOG ───────────────────────────────────────────────────────
+function log(text, cls) {
+  const box = document.getElementById('log-box');
+  const d = document.createElement('div');
+  d.className = 'log-line ' + cls;
+  d.textContent = text;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+  if(box.children.length > 60) box.removeChild(box.firstChild);
+}
+function time() { return new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+
+// ── SERVER CONFIG ─────────────────────────────────────────────
+function saveServer() {
+  SERVER = document.getElementById('server-url-input').value.trim().replace(/\/$/,'');
+  localStorage.setItem('bd_server', SERVER);
+  loadAll();
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+async function loadAll() {
+  await checkHealth();
+  await loadOrders();
+  await loadWaitlist();
+}
+
+function initApp() {
+  loadAll();
+  setInterval(loadAll, 30000);
+}
+</script>
+</body>
+</html>
